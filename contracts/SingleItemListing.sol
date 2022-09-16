@@ -4,7 +4,7 @@ pragma solidity ^0.8.11;
 import {IOwnable} from "../openzeppelin/IOwnable.sol";
 import "../openzeppelin/SafeERC20.sol";
 
-contract ItemListing {
+contract SingleItemListing {
     address public immutable factory;
     address public immutable seller;
     address public immutable tokenWanted;
@@ -19,9 +19,9 @@ contract ItemListing {
     bool public sellerConfirm = false;
     bool public buyerConfirm = false;
     bool public arbitratorConfirm = false;
-    string memory imageURL;
-    string memory name;
-    string memory desc;
+    string imageURL;
+    string name;
+    string desc;
 
     event ListingPurchased(address buyer, address seller, address tokenWanted, uint256 amountWanted);
     event SellerConfirmation(address seller, bool sellerConfirm);
@@ -51,7 +51,8 @@ contract ItemListing {
         arbitratorFee = _arbitratorFee;
         admin = IOwnable(factory).owner();
         imageURL = _imageURL;
-        name 
+        name = _name;
+        desc = _desc;
     }
 
     function getAdmin() public view returns (address) {
@@ -91,16 +92,21 @@ contract ItemListing {
     }
 
     function sellerClaim() public returns (bool) {
+        //the primary executed if, checks that the buyer and seller have confirmed
+        //and releases the assets
         if (sellerConfirm == true && buyerConfirm == true && purchased == true) {
             SafeERC20.safeTransfer(IERC20(tokenWanted), seller, amountWanted);
             hasEnded = true;
             return hasEnded;
         }
+        //seller confirms + arbitrator confirms in case of buyer forgetting to sign
+        //or a rare case of a buyer attempting to scam the seller
         if (sellerConfirm == true && arbitratorConfirm == true && purchased == true) {
             SafeERC20.safeTransfer(IERC20(tokenWanted), seller, amountWanted);
             hasEnded = true;
             return hasEnded;
         }
+        //rare but possible
         if (buyerConfirm == true && arbitratorConfirm == true && purchased == true) {
             SafeERC20.safeTransfer(IERC20(tokenWanted), seller, amountWanted);
             hasEnded = true;
@@ -110,16 +116,24 @@ contract ItemListing {
     }
 
     function returnAssetsToBuyer() public {
-        require(msg.sender == arbitrator || msg.sender == buyer);
-        require(arbitratorConfirm == false);
-        require(buyerConfirm == false);
+        /**An arbitrator only function to return assets to the buyer
+        you don't actually want the buyer to be able to call this function
+        Because if the buyer was able to call this function, then 
+        at any time once the item is shipped the assets could be
+        returned to the buyer, allowing manipulation.
+        */
+        require(msg.sender == arbitrator);
+        require(arbitratorConfirm == false && buyerConfirm == false);
         require(purchased == true);
         SafeERC20.safeTransfer(IERC20(tokenWanted), buyer, amountWanted);
+        hasEnded = true;
     }
 
     function cancel() public {
         require(msg.sender == seller);
+        require(hasEnded == false);
         require(purchased == false);
+        //logic after checking requires to avoid reentrancy
         hasEnded = true;
         emit ListingCanceled(seller, tokenWanted, amountWanted);
     }

@@ -7,61 +7,61 @@ import {SingleItemListing} from "./SingleItemListing.sol";
 contract SingleItemFactory is Ownable {
     uint256 public protocolFee = 750; // in bps
     uint256 public arbitratorFee = 100; // in bps
-    address public arbitrator;
-    ItemListing[] public listings;
-    mapping(address => ItemListing[]) userListings;
+    address public admin;
+    SingleItemListing[] public listings;
+    mapping(address => SingleItemListing[]) userListings;
 
     constructor() {
-        arbitrator = msg.sender;
+        admin = msg.sender;
     }
 
-    event ListingCreated(address offerAddress, address tokenWanted, uint256 amountWanted);
-
-    function setFee(uint256 _fee) public onlyOwner {
-        fee = _fee;
+    function transferAdmin(address newAdmin) public {
+        require(msg.sender == admin); 
+        admin = newAdmin;
     }
 
-    function createListing(address _tokenWanted, uint256 _amountWanted, string memory imageURL, string memory name, string memory desc) public returns (ItemListing) {
-        ItemListing listing = new SingleItemListing(msg.sender, _tokenWanted, arbitrator, _amountWanted, protocolFee, arbitratorFee);
+    event ListingCreated(address listingAddress, address tokenWanted, uint256 amountWanted);
+
+    function setProtocolFee(uint256 _newProtocolFee) public onlyOwner {
+        protocolFee = _newProtocolFee;
+    }
+    
+    function setArbitratorFee(uint256 _newArbitratorFee) public onlyOwner {
+        protocolFee = _newArbitratorFee;
+    }
+
+    function createListing(address _tokenWanted, uint256 _amountWanted, address arbitrator, string memory imageURL, string memory name, string memory desc) public returns (SingleItemListing) {
+        SingleItemListing listing = new SingleItemListing(
+            msg.sender, 
+            _tokenWanted, 
+            arbitrator, 
+            _amountWanted, 
+            protocolFee, 
+            arbitratorFee,
+            imageURL,
+            name,
+            desc
+        );
         listings.push(listing);
-        userListings(msg.sender).push(listing);
+        userListings[msg.sender].push(listing);
         emit ListingCreated(address(listing), _tokenWanted, _amountWanted);
         return listing;
     }
 
-    function getActiveListingsByOwner() public view returns (ItemListing[] memory, ItemListing[] memory) {
-        ItemListing[] memory myBids = new ItemListing[](listings.length);
-        ItemListing[] memory otherBids = new ItemListing[](listings.length);
-
-        uint256 myBidsCount;
-        uint256 otherBidsCount;
-        for (uint256 i; i < listings.length; i++) {
-            ItemListing listing = ItemListing(listings[i]);
-            if (listing.hasTokens() && !listing.hasEnded()) {
-                if (listing.seller() == msg.sender) {
-                    myBids[myBidsCount++] = listings[i];
-                }
-            }
-        }
-
-        return (myBids);
-    }
-
-    function getActiveListings() public view returns (ItemListing[] memory) {
-        ItemListing[] memory activeListings = new ItemListing[](listings.length);
+    function getActiveListings() public view returns (SingleItemListing[] memory) {
+        SingleItemListing[] memory activeListings = new SingleItemListing[](listings.length);
         uint256 count;
         for (uint256 i; i < listings.length; i++) {
-            ItemListing offer = ItemListing(listings[i]);
-            if (!offer.hasEnded()) {
-                activeListings[count++] = offer;
+            SingleItemListing individualListing = SingleItemListing(listings[i]);
+            if (!individualListing.hasTokens() && !individualListing.hasEnded()) {
+                activeListings[count++] = individualListing;
             }
         }
-
         return activeListings;
     }
 
-    function getactiveListingsByRange(uint256 start, uint256 end) public view returns (ItemListing[] memory) {
-        ItemListing[] memory activeListings = new ItemListing[](end - start);
+    function getactiveListingsByRange(uint256 start, uint256 end) public view returns (SingleItemListing[] memory) {
+        SingleItemListing[] memory activeListings = new SingleItemListing[](end - start);
 
         uint256 count;
         for (uint256 i = start; i < end; i++) {
@@ -73,7 +73,7 @@ contract SingleItemFactory is Ownable {
         return activeListings;
     }
 
-    function getLen() public view returns (uint) {
+    function getLength() public view returns (uint) {
         return listings.length;
     }
 }
