@@ -291,49 +291,9 @@
         }
       }
     },
-    "/Users/joshuabaker/underscore/underscore_forge/src/ISCORE.sol": {
-      "lastModificationDate": 1663405592101,
-      "contentHash": "5bb9bffb91730e73b2a9ab2f845b42c9",
-      "sourceName": "src/ISCORE.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "src/openzeppelin/IERC20.sol",
-        "src/openzeppelin/IERC4626.sol"
-      ],
-      "versionRequirement": "^0.8.7",
-      "artifacts": {
-        "ISCORE": {
-          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "ISCORE.sol/ISCORE.json"
-        }
-      }
-    },
     "/Users/joshuabaker/underscore/underscore_forge/src/SCORE.sol": {
-      "lastModificationDate": 1663408907431,
-      "contentHash": "da47eb4ab49092e074df51f99254fe6c",
+      "lastModificationDate": 1663411894037,
+      "contentHash": "9b5ec221047d2c0e9f236f5e900c3b0f",
       "sourceName": "src/SCORE.sol",
       "solcConfig": {
         "settings": {
@@ -361,20 +321,14 @@
         }
       },
       "imports": [
-        "src/ISCORE.sol",
-        "src/openzeppelin/Address.sol",
-        "src/openzeppelin/Context.sol",
-        "src/openzeppelin/ERC20.sol",
-        "src/openzeppelin/IERC20.sol",
-        "src/openzeppelin/IERC20Metadata.sol",
-        "src/openzeppelin/IERC4626.sol",
-        "src/openzeppelin/Ownable.sol",
-        "src/openzeppelin/SafeERC20.sol"
+        "src/openzeppelin/FixedPointMathLib.sol",
+        "src/openzeppelin/SafeTransferLib.sol",
+        "src/openzeppelin/Solmate_ERC20.sol"
       ],
-      "versionRequirement": "^0.8.7",
+      "versionRequirement": ">=0.8.0",
       "artifacts": {
-        "SCORE": {
-          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "SCORE.sol/SCORE.json"
+        "scoreVault": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "SCORE.sol/scoreVault.json"
         }
       }
     },
@@ -699,6 +653,43 @@
       "artifacts": {
         "ERC721": {
           "0.8.13+commit.abaa5c0e.Darwin.appleclang": "ERC721.sol/ERC721.json"
+        }
+      }
+    },
+    "/Users/joshuabaker/underscore/underscore_forge/src/openzeppelin/FixedPointMathLib.sol": {
+      "lastModificationDate": 1663409950397,
+      "contentHash": "3f11b4a12e53209601380ae5553496c3",
+      "sourceName": "src/openzeppelin/FixedPointMathLib.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "FixedPointMathLib": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "FixedPointMathLib.sol/FixedPointMathLib.json"
         }
       }
     },
@@ -1083,6 +1074,82 @@
       "artifacts": {
         "SafeERC20": {
           "0.8.13+commit.abaa5c0e.Darwin.appleclang": "SafeERC20.sol/SafeERC20.json"
+        }
+      }
+    },
+    "/Users/joshuabaker/underscore/underscore_forge/src/openzeppelin/SafeTransferLib.sol": {
+      "lastModificationDate": 1663410633785,
+      "contentHash": "6d6f0114d46a54f6e2f33c825f240454",
+      "sourceName": "src/openzeppelin/SafeTransferLib.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [
+        "src/openzeppelin/Solmate_ERC20.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "SafeTransferLib": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "SafeTransferLib.sol/SafeTransferLib.json"
+        }
+      }
+    },
+    "/Users/joshuabaker/underscore/underscore_forge/src/openzeppelin/Solmate_ERC20.sol": {
+      "lastModificationDate": 1663410222204,
+      "contentHash": "516e3513b3c68c90461045affc659887",
+      "sourceName": "src/openzeppelin/Solmate_ERC20.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs"
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "london"
+        }
+      },
+      "imports": [],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "ERC20": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Solmate_ERC20.sol/ERC20.json"
         }
       }
     },

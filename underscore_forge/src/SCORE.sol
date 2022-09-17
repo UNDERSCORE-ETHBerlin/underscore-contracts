@@ -1,225 +1,192 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-pragma solidity ^0.8.7;
+// SPDX-License-Identifier: AGPL-3.0-only
+pragma solidity >=0.8.0;
 
-import { ERC20 }       from "./openzeppelin/ERC20.sol";
-import { ISCORE } from "./ISCORE.sol";
-import { SafeERC20 } from "./openzeppelin/SafeERC20.sol";
-import { Ownable } from "./openzeppelin/Ownable.sol";
-contract SCORE is ERC20 {
+import {ERC20} from "./openzeppelin/Solmate_ERC20.sol";
+import {SafeTransferLib} from "./openzeppelin/SafeTransferLib.sol";
+import {FixedPointMathLib} from "./openzeppelin/FixedPointMathLib.sol";
 
-    uint256 public immutable precision;  // Precision of rates, equals max deposit amounts before rounding errors occur
+abstract contract scoreVault is ERC20 {
+    using FixedPointMathLib for uint256;
+    using SafeTransferLib for ERC20;
+    /*//////////////////////////////////////////////////////////////
+                                 EVENTS
+    //////////////////////////////////////////////////////////////*/
 
-    address public asset;  // Underlying ERC-20 asset used by ERC-4626 functionality.
-    address public owner;         // Current owner of the contract, able to update the vesting schedule.
-    address public pendingOwner;  // Pending owner of the contract, able to accept ownership.
+    event Deposit(address indexed caller, address indexed owner, uint256 assets, uint256 shares);
 
-    uint256 public freeAssets;           // Amount of assets unlocked regardless of time passed.
-    uint256 public issuanceRate;         // asset/second rate dependent on aggregate vesting schedule.
-    uint256 public lastUpdated;          // Timestamp of when issuance equation was last updated.
-    uint256 public vestingPeriodFinish;  // Timestamp when current vesting schedule ends.
+    event Withdraw(
+        address indexed caller,
+        address indexed receiver,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
+    );
 
-    uint256 private locked = 1;  // Used in reentrancy check.
+    /*//////////////////////////////////////////////////////////////
+                               IMMUTABLES
+    //////////////////////////////////////////////////////////////*/
 
-    /*****************/
-    /*** Modifiers ***/
-    /*****************/
-
-    modifier nonReentrant() {
-        require(locked == 1, "RDT:LOCKED");
-
-        locked = 2;
-
-        _;
-
-        locked = 1;
+    ERC20 public immutable asset; //score
+    ERC20 public immutable WETH;
+    constructor(
+        ERC20 _asset,
+        string memory _name,
+        string memory _symbol,
+        ERC20 _WETH
+    ) ERC20(_name, _symbol, _asset.decimals()) {
+        asset = _asset;
+        WETH = _WETH;
     }
 
-    constructor(string memory name_, string memory symbol_, address owner_, address asset_, uint256 precision_)
-        ERC20(name_, symbol_, ERC20(asset_).decimals(), owner_)
-    {
-        require((owner = owner_) != address(0), "RDT:C:OWNER_ZERO_ADDRESS");
+    /*//////////////////////////////////////////////////////////////
+                        DEPOSIT/WITHDRAWAL LOGIC
+    //////////////////////////////////////////////////////////////*/
 
-        asset     = asset_;  // Don't need to check zero address as ERC20(asset_).decimals() will fail in ERC20 constructor.
-        precision = precision_;
+    function deposit(uint256 assets, address receiver) public virtual returns (uint256 shares) {
+        // Check for rounding error since we round down in previewDeposit.
+        require((shares = previewDeposit(assets)) != 0, "ZERO_SHARES");
+
+        // Need to transfer before minting or ERC777s could reenter.
+        asset.safeTransferFrom(msg.sender, address(this), assets);
+
+        _mint(receiver, shares);
+
+        emit Deposit(msg.sender, receiver, assets, shares);
+
+        afterDeposit(assets, shares);
     }
 
-    /********************************/
-    /*** Administrative Functions ***/
-    /********************************/
+    function mint(uint256 shares, address receiver) public virtual returns (uint256 assets) {
+        assets = previewMint(shares); // No need to check for rounding error, previewMint rounds up.
 
-    function acceptOwnership() external virtual {
-        require(msg.sender == pendingOwner, "RDT:AO:NOT_PO");
-        owner        = msg.sender;
-        pendingOwner = address(0);
+        // Need to transfer before minting or ERC777s could reenter.
+        asset.safeTransferFrom(msg.sender, address(this), assets);
+
+        _mint(receiver, shares);
+
+        emit Deposit(msg.sender, receiver, assets, shares);
+
+        afterDeposit(assets, shares);
     }
 
-    function setPendingOwner(address pendingOwner_) external virtual {
-        require(msg.sender == owner, "RDT:SPO:NOT_OWNER");
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) public virtual returns (uint256 shares) {
+        shares = previewWithdraw(assets); // No need to check for rounding error, previewWithdraw rounds up.
 
-        pendingOwner = pendingOwner_;
-    }
+        if (msg.sender != owner) {
+            uint256 allowed = allowance[owner][msg.sender]; // Saves gas for limited approvals.
 
-    function updateVestingSchedule(uint256 vestingPeriod_) external virtual returns (uint256 issuanceRate_, uint256 freeAssets_) {
-        
-        require(msg.sender == owner, "RDT:UVS:NOT_OWNER");
-        require(totalSupply() != 0,    "RDT:UVS:ZERO_SUPPLY");
-
-        // Update "y-intercept" to reflect current available asset.
-        freeAssets_ = freeAssets = totalAssets();
-
-        // Calculate slope.
-        issuanceRate_ = issuanceRate = ((ERC20(asset).balanceOf(address(this)) - freeAssets_) * precision) / vestingPeriod_;
-
-        // Update timestamp and period finish.
-        vestingPeriodFinish = (lastUpdated = block.timestamp) + vestingPeriod_;
-
-        return (issuanceRate_, freeAssets_);
-    }
-
-    /************************/
-    /*** Staker Functions ***/
-    /************************/
-
-    function deposit(uint256 assets_, address receiver_) external virtual nonReentrant returns (uint256 shares_) {
-        _mint(shares_ = previewDeposit(assets_), assets_, receiver_, msg.sender);
-    }
-
-    function mint(uint256 shares_, address receiver_) external virtual nonReentrant returns (uint256 assets_) {
-        _mint(shares_, assets_ = previewMint(shares_), receiver_, msg.sender);
-    }
-
-    function redeem(uint256 shares_, address receiver_, address owner_) external virtual nonReentrant returns (uint256 assets_) {
-        _burn(shares_, assets_ = previewRedeem(shares_), receiver_, owner_, msg.sender);
-    }
-
-    function withdraw(uint256 assets_, address receiver_, address owner_) external virtual nonReentrant returns (uint256 shares_) {
-        _burn(shares_ = previewWithdraw(assets_), assets_, receiver_, owner_, msg.sender);
-    }
-
-    /**************************/
-    /*** Internal Functions ***/
-    /**************************/
-
-    function _mint(uint256 shares_, uint256 assets_, address receiver_, address caller_) internal {
-        require(receiver_ != address(0), "RDT:M:ZERO_RECEIVER");
-        require(shares_   != uint256(0), "RDT:M:ZERO_SHARES");
-        require(assets_   != uint256(0), "RDT:M:ZERO_ASSETS");
-
-        _mint(receiver_, shares_);
-
-        uint256 freeAssetsCache = freeAssets = totalAssets() + assets_;
-
-        uint256 issuanceRate_ = _updateIssuanceParams();
-
-        SafeERC20.safeTransferFrom(ERC20(asset), caller_, address(this), assets_);
-    }
-
-    function _burn(uint256 shares_, uint256 assets_, address receiver_, address owner_, address caller_) internal {
-        require(receiver_ != address(0), "RDT:B:ZERO_RECEIVER");
-        require(shares_   != uint256(0), "RDT:B:ZERO_SHARES");
-        require(assets_   != uint256(0), "RDT:B:ZERO_ASSETS");
-
-        if (caller_ != owner_) {
-            decreaseAllowance(caller_, shares_);
+            if (allowed != type(uint256).max) allowance[owner][msg.sender] = allowed - shares;
         }
 
-        _burn(owner_, shares_);
+        beforeWithdraw(assets, shares);
 
-        uint256 freeAssetsCache = freeAssets = totalAssets() - assets_;
+        _burn(owner, shares);
 
-        uint256 issuanceRate_ = _updateIssuanceParams();
+        emit Withdraw(msg.sender, receiver, owner, assets, shares);
 
-        SafeERC20.safeTransfer(ERC20(asset), receiver_, assets_);
+        asset.safeTransfer(receiver, assets);
+        
     }
 
-    function _updateIssuanceParams() internal returns (uint256 issuanceRate_) {
-        return issuanceRate = (lastUpdated = block.timestamp) > vestingPeriodFinish ? 0 : issuanceRate;
+    function redeem(
+        uint256 shares,
+        address receiver,
+        address owner
+    ) public virtual returns (uint256 assets) {
+        if (msg.sender != owner) {
+            uint256 allowed = allowance[owner][msg.sender]; // Saves gas for limited approvals.
+
+            if (allowed != type(uint256).max) allowance[owner][msg.sender] = allowed - shares;
+        }
+
+        // Check for rounding error since we round down in previewRedeem.
+        require((assets = previewRedeem(shares)) != 0, "ZERO_ASSETS");
+
+        beforeWithdraw(assets, shares);
+
+
+        _burn(owner, shares);
+
+        emit Withdraw(msg.sender, receiver, owner, assets, shares);
+
+        asset.safeTransfer(receiver, assets);
     }
 
-    /**********************/
-    /*** View Functions ***/
-    /**********************/
-
-    function balanceOfAssets(address account_, address token) public view returns (uint256 balanceOfAssets_) {
-        return convertToAssets(ERC20(token).balanceOf(account_));
+    function claimWETH() public returns (uint256) {
+        return 1;
     }
 
-    function convertToAssets(uint256 shares_) public view virtual returns (uint256 assets_) {
-        uint256 supply = totalSupply();  // Cache to stack.
+    function accrueWETH() public {
+        
+    }
+    
+    /*//////////////////////////////////////////////////////////////
+                            ACCOUNTING LOGIC
+    //////////////////////////////////////////////////////////////*/
 
-        assets_ = supply == 0 ? shares_ : (shares_ * totalAssets()) / supply;
+    function totalAssets() public view virtual returns (uint256);
+
+    function convertToShares(uint256 assets) public view virtual returns (uint256) {
+        uint256 supply = totalSupply; // Saves an extra SLOAD if totalSupply is non-zero.
+
+        return supply == 0 ? assets : assets.mulDivDown(supply, totalAssets());
     }
 
-    function convertToShares(uint256 assets_) public view virtual returns (uint256 shares_) {
-        uint256 supply = totalSupply();  // Cache to stack.
+    function convertToAssets(uint256 shares) public view virtual returns (uint256) {
+        uint256 supply = totalSupply; // Saves an extra SLOAD if totalSupply is non-zero.
 
-        shares_ = supply == 0 ? assets_ : (assets_ * supply) / totalAssets();
+        return supply == 0 ? shares : shares.mulDivDown(totalAssets(), supply);
     }
 
-    function maxDeposit(address receiver_) external pure virtual returns (uint256 maxAssets_) {
-        receiver_;  // Silence warning
-        maxAssets_ = type(uint256).max;
+    function previewDeposit(uint256 assets) public view virtual returns (uint256) {
+        return convertToShares(assets);
     }
 
-    function maxMint(address receiver_) external pure virtual returns (uint256 maxShares_) {
-        receiver_;  // Silence warning
-        maxShares_ = type(uint256).max;
+    function previewMint(uint256 shares) public view virtual returns (uint256) {
+        uint256 supply = totalSupply; // Saves an extra SLOAD if totalSupply is non-zero.
+
+        return supply == 0 ? shares : shares.mulDivUp(totalAssets(), supply);
     }
 
-    function maxWithdraw(address owner_) external view virtual returns (uint256 maxAssets_) {
-        maxAssets_ = balanceOfAssets(owner_, asset);
+    function previewWithdraw(uint256 assets) public view virtual returns (uint256) {
+        uint256 supply = totalSupply; // Saves an extra SLOAD if totalSupply is non-zero.
+
+        return supply == 0 ? assets : assets.mulDivUp(supply, totalAssets());
     }
 
-    function previewDeposit(uint256 assets_) public view virtual returns (uint256 shares_) {
-        // As per https://eips.ethereum.org/EIPS/eip-4626#security-considerations,
-        // it should round DOWN if it’s calculating the amount of shares to issue to a user, given an amount of assets provided.
-        shares_ = convertToShares(assets_);
+    function previewRedeem(uint256 shares) public view virtual returns (uint256) {
+        return convertToAssets(shares);
     }
 
-    function previewMint(uint256 shares_) public view virtual returns (uint256 assets_) {
-        uint256 supply = totalSupply();  // Cache to stack.
+    /*//////////////////////////////////////////////////////////////
+                     DEPOSIT/WITHDRAWAL LIMIT LOGIC
+    //////////////////////////////////////////////////////////////*/
 
-        // As per https://eips.ethereum.org/EIPS/eip-4626#security-considerations,
-        // it should round UP if it’s calculating the amount of assets a user must provide, to be issued a given amount of shares.
-        assets_ = supply == 0 ? shares_ : _divRoundUp(shares_ * totalAssets(), supply);
+    function maxDeposit(address) public view virtual returns (uint256) {
+        return type(uint256).max;
     }
 
-    function previewRedeem(uint256 shares_) public view virtual returns (uint256 assets_) {
-        // As per https://eips.ethereum.org/EIPS/eip-4626#security-considerations,
-        // it should round DOWN if it’s calculating the amount of assets to send to a user, given amount of shares returned.
-        assets_ = convertToAssets(shares_);
+    function maxMint(address) public view virtual returns (uint256) {
+        return type(uint256).max;
     }
 
-    function previewWithdraw(uint256 assets_) public view virtual returns (uint256 shares_) {
-        uint256 supply = totalSupply();  // Cache to stack.
-
-        // As per https://eips.ethereum.org/EIPS/eip-4626#security-considerations,
-        // it should round UP if it’s calculating the amount of shares a user must return, to be sent a given amount of assets.
-        shares_ = supply == 0 ? assets_ : _divRoundUp(assets_ * supply, totalAssets());
+    function maxWithdraw(address owner) public view virtual returns (uint256) {
+        return convertToAssets(balanceOf[owner]);
     }
 
-    function totalAssets() public view virtual returns (uint256 totalManagedAssets_) {
-        uint256 issuanceRate_ = issuanceRate;
-
-        if (issuanceRate_ == 0) return freeAssets;
-
-        uint256 vestingPeriodFinish_ = vestingPeriodFinish;
-        uint256 lastUpdated_         = lastUpdated;
-
-        uint256 vestingTimePassed =
-            block.timestamp > vestingPeriodFinish_ ?
-                vestingPeriodFinish_ - lastUpdated_ :
-                block.timestamp - lastUpdated_;
-
-        return ((issuanceRate_ * vestingTimePassed) / precision) + freeAssets;
+    function maxRedeem(address owner) public view virtual returns (uint256) {
+        return balanceOf[owner];
     }
 
-    /**************************/
-    /*** Internal Functions ***/
-    /**************************/
+    /*//////////////////////////////////////////////////////////////
+                          INTERNAL HOOKS LOGIC
+    //////////////////////////////////////////////////////////////*/
 
-    function _divRoundUp(uint256 numerator_, uint256 divisor_) internal pure returns (uint256 result_) {
-       return (numerator_ / divisor_) + (numerator_ % divisor_ > 0 ? 1 : 0);
-    }
+    function beforeWithdraw(uint256 assets, uint256 shares) internal virtual {}
 
+    function afterDeposit(uint256 assets, uint256 shares) internal virtual {}
 }
