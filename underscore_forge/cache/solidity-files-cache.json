@@ -292,8 +292,8 @@
       }
     },
     "/Users/joshuabaker/underscore/underscore_forge/src/SingleItemFactory.sol": {
-      "lastModificationDate": 1663427705857,
-      "contentHash": "f63b018898f04c6eab9ee5bf117970a6",
+      "lastModificationDate": 1663428205295,
+      "contentHash": "cbbad3ca6ab0cc13f962c0cc1c3ead03",
       "sourceName": "src/SingleItemFactory.sol",
       "solcConfig": {
         "settings": {
@@ -325,7 +325,6 @@
         "src/SingleItemListing.sol",
         "src/openzeppelin/Address.sol",
         "src/openzeppelin/IERC20.sol",
-        "src/openzeppelin/IOwnable.sol",
         "src/openzeppelin/SafeERC20.sol"
       ],
       "versionRequirement": "^0.8.11",
@@ -336,8 +335,8 @@
       }
     },
     "/Users/joshuabaker/underscore/underscore_forge/src/SingleItemListing.sol": {
-      "lastModificationDate": 1663427382084,
-      "contentHash": "a7d82f285b18479c9a220d05d7d28af6",
+      "lastModificationDate": 1663428267890,
+      "contentHash": "1d43abe6141ca5dc4ba2146b912fee12",
       "sourceName": "src/SingleItemListing.sol",
       "solcConfig": {
         "settings": {
@@ -369,7 +368,6 @@
         "src/SingleItemListing.sol",
         "src/openzeppelin/Address.sol",
         "src/openzeppelin/IERC20.sol",
-        "src/openzeppelin/IOwnable.sol",
         "src/openzeppelin/SafeERC20.sol"
       ],
       "versionRequirement": "^0.8.11",

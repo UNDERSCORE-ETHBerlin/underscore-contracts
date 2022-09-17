@@ -29,6 +29,10 @@ contract SingleItemFactory {
         admin = newAdmin;
     }
 
+    function owner() public view returns (address) {
+        return admin;
+    }
+
     event ListingCreated(address listingAddress, address tokenWanted, uint256 amountWanted);
 
     function setProtocolFee(uint256 _newProtocolFee) public  {

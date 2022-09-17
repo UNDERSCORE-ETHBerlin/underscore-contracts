@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.11;
 
-import {IOwnable} from "./openzeppelin/IOwnable.sol";
 import "./openzeppelin/SafeERC20.sol";
 import "./SingleItemFactory.sol";
 
@@ -53,7 +52,7 @@ contract SingleItemListing {
         arbitrator = _arbitrator;
         protocolFee = _protocolFee;
         arbitratorFee = _arbitratorFee;
-        admin = IOwnable(factory).owner();
+        admin = SingleItemFactory(factory).owner();
         imageURL = _imageURL;
         itemName = _itemName;
         itemDesc = _itemDesc;
@@ -61,7 +60,7 @@ contract SingleItemListing {
     }
 
     function getAdmin() public view returns (address) {
-        return IOwnable(factory).owner();
+        return SingleItemFactory(factory).owner();
     }
 
     function getFactory() public view returns (address) {
