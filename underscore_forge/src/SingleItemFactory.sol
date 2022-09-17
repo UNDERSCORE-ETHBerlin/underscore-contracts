@@ -12,7 +12,7 @@ contract SingleItemFactory is Ownable {
 
     SingleItemListing[] public listings;
     mapping(address => SingleItemListing[]) public userListings;
-    mapping(address => uint) volumeAccrued;
+    mapping(address => uint) adjustedVolumeAccrued;
 
     struct userRatings {
         uint256 userAverage;
@@ -90,8 +90,11 @@ contract SingleItemFactory is Ownable {
                 volumeUnaccrued += individualListing.amountWanted();
             }
         }
-        volumeAccrued[user] += volumeUnaccrued;
-        return volumeAccrued[user];
+        //adjusting volume for rating, punishing bad sellers
+        uint256 userRatingCurrently = userRatingMapping[user].userAverage;
+        uint256 adjustedVolumeUnaccrued = (userRatingCurrently - 1) * volumeUnaccrued;
+        adjustedVolumeAccrued[user] += adjustedVolumeUnaccrued;
+        return adjustedVolumeAccrued[user];
     }
 
     //view functions
