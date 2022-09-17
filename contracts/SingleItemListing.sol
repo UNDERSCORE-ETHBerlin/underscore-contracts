@@ -19,6 +19,7 @@ contract SingleItemListing {
     bool public sellerConfirm = false;
     bool public buyerConfirm = false;
     bool public arbitratorConfirm = false;
+    bool public hasThisBeenReviewed = false;
     string imageURL;
     string name;
     string desc;
@@ -91,6 +92,11 @@ contract SingleItemListing {
         }
     }
 
+    function reviewSeller() public {
+        require(msg.sender == factory);
+        hasThisBeenReviewed = true;
+    }
+
     function sellerClaim() public returns (bool) {
         //the primary executed if, checks that the buyer and seller have confirmed
         //and releases the assets
@@ -141,6 +147,22 @@ contract SingleItemListing {
 
     function hasTokens() public view returns (bool) {
         return IERC20(tokenWanted).balanceOf(address(this)) > 0;
+    }
+
+    function getBuyer() public view returns (address) {
+        return buyer;
+    }
+    function getSeller() public view returns (address) {
+        return seller;
+    }
+    function getArbitrator() public view returns (address) {
+        return arbitrator;
+    }
+    function getHasEnded() public view returns (bool) {
+        return hasEnded;
+    }
+    function getHasThisBeenReviewed() public view returns (bool) {
+        return hasThisBeenReviewed;
     }
 
     function mulDiv(

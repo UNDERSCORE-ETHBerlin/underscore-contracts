@@ -9,7 +9,12 @@ contract SingleItemFactory is Ownable {
     uint256 public arbitratorFee = 100; // in bps
     address public admin;
     SingleItemListing[] public listings;
-    mapping(address => SingleItemListing[]) userListings;
+    mapping(address => SingleItemListing[]) public userListings;
+    struct userRatings {
+        uint256 userAverage;
+        uint256 numOfReviews;
+    }
+    mapping(address => userRatings) public userRatingMapping;
 
     constructor() {
         admin = msg.sender;
@@ -31,6 +36,7 @@ contract SingleItemFactory is Ownable {
     }
 
     function createListing(address _tokenWanted, uint256 _amountWanted, address arbitrator, string memory imageURL, string memory name, string memory desc) public returns (SingleItemListing) {
+        
         SingleItemListing listing = new SingleItemListing(
             msg.sender, 
             _tokenWanted, 
@@ -48,6 +54,25 @@ contract SingleItemFactory is Ownable {
         return listing;
     }
 
+    //reviews
+    
+    function writeReview(address user, uint256 review, SingleItemListing listing) public returns (uint256) {
+        require(review == 1 || review == 2 || review == 3 || review == 4 || review == 5, "Review is not a compatible number");
+        require(listing.getHasEnded() == true && msg.sender == listing.getBuyer());
+        //reading the current data
+        uint256 currentAvgReview = userRatingMapping[user].userAverage;        
+        uint256 currentNumOfReviews = userRatingMapping[user].numOfReviews;
+        //calculating the new average
+        uint256 newAvg = (currentAvgReview * currentNumOfReviews) + review;
+        uint256 newNumOfReviews = currentNumOfReviews + 1;
+
+        //writing the data to storage
+        userRatingMapping[user].userAverage = newAvg;
+        userRatingMapping[user].numOfReviews = newNumOfReviews;
+        return review;
+    }
+
+    //view functions
     function getSingleUserListings(address user) public view returns(SingleItemListing[] memory) {
         return userListings[user];
     }
