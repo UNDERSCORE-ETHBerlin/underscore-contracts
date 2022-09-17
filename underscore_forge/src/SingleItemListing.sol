@@ -192,6 +192,7 @@ contract SingleItemListing {
         vars.arbitrator_ = arbitrator;
         vars.tokenWanted_ = tokenWanted;
         vars.amountWanted_ = amountWanted;
+        vars.itemName_ = itemName;
         vars.imageURL_ = imageURL;
         vars.itemDesc_ = itemDesc;
         return vars;
