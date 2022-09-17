@@ -26,7 +26,7 @@ contract SingleItemListing {
     event ListingPurchased(address buyer, address seller, address tokenWanted, uint256 amountWanted);
     event SellerConfirmation(address seller, bool sellerConfirm);
     event ArbitratorConfirmation(address arbitrator, bool arbitratorConfirm);
-    event ListingArrived(address buyer, address seller, address tokenWanted, uint256 amountWanted);
+    event ListingArrived(address buyer, address seller, address tokenWanted, uint256 amountReceived);
     event ListingCanceled(address seller, address tokenWanted, uint256 amountWanted);
 
 
@@ -95,20 +95,20 @@ contract SingleItemListing {
         //the primary executed if, checks that the buyer and seller have confirmed
         //and releases the assets
         if (sellerConfirm == true && buyerConfirm == true && purchased == true) {
-            SafeERC20.safeTransfer(IERC20(tokenWanted), seller, amountWanted);
+            SafeERC20.safeTransfer(IERC20(tokenWanted), seller, IERC20(tokenWanted).balanceOf(address(this)));
             hasEnded = true;
             return hasEnded;
         }
         //seller confirms + arbitrator confirms in case of buyer forgetting to sign
         //or a rare case of a buyer attempting to scam the seller
         if (sellerConfirm == true && arbitratorConfirm == true && purchased == true) {
-            SafeERC20.safeTransfer(IERC20(tokenWanted), seller, amountWanted);
+            SafeERC20.safeTransfer(IERC20(tokenWanted), seller, IERC20(tokenWanted).balanceOf(address(this)));
             hasEnded = true;
             return hasEnded;
         }
         //rare but possible
         if (buyerConfirm == true && arbitratorConfirm == true && purchased == true) {
-            SafeERC20.safeTransfer(IERC20(tokenWanted), seller, amountWanted);
+            SafeERC20.safeTransfer(IERC20(tokenWanted), seller, IERC20(tokenWanted).balanceOf(address(this)));
             hasEnded = true;
             return hasEnded;
         }
@@ -122,10 +122,11 @@ contract SingleItemListing {
         at any time once the item is shipped the assets could be
         returned to the buyer, allowing manipulation.
         */
+
         require(msg.sender == arbitrator);
         require(arbitratorConfirm == false && buyerConfirm == false);
         require(purchased == true);
-        SafeERC20.safeTransfer(IERC20(tokenWanted), buyer, amountWanted);
+        SafeERC20.safeTransfer(IERC20(tokenWanted), buyer, IERC20(tokenWanted).balanceOf(address(this)));
         hasEnded = true;
     }
 
@@ -135,7 +136,7 @@ contract SingleItemListing {
         require(purchased == false);
         //logic after checking requires to avoid reentrancy
         hasEnded = true;
-        emit ListingCanceled(seller, tokenWanted, amountWanted);
+        emit ListingCanceled(seller, tokenWanted, IERC20(tokenWanted).balanceOf(address(this)));
     }
 
     function hasTokens() public view returns (bool) {

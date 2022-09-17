@@ -48,6 +48,10 @@ contract SingleItemFactory is Ownable {
         return listing;
     }
 
+    function getSingleUserListings(address user) public view returns(SingleItemListing[] memory) {
+        return userListings[user];
+    }
+
     function getActiveListings() public view returns (SingleItemListing[] memory) {
         SingleItemListing[] memory activeListings = new SingleItemListing[](listings.length);
         uint256 count;
