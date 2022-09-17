@@ -77,7 +77,7 @@ contract SingleItemFactory is Ownable {
     }
 
     //post hackathon distributions can actually be distributed, this is to keep proper accounting until then
-    function accrueDistributions(address user) public {
+    function accrueDistributions(address user) public returns (uint256) {
         SingleItemListing[] memory usersListings = getSingleUserListings(msg.sender);
         uint256 volumeUnaccrued;
         for (uint256 i; i < usersListings.length; i++) {
