@@ -139,19 +139,6 @@ contract SingleItemFactory is Ownable {
         return activeListings;
     }
 
-    function getactiveListingsByRange(uint256 start, uint256 end) public view returns (SingleItemListing[] memory) {
-        SingleItemListing[] memory activeListings = new SingleItemListing[](end - start);
-
-        uint256 count;
-        for (uint256 i = start; i < end; i++) {
-            if (listings[i].hasTokens() && !listings[i].hasEnded()) {
-                activeListings[count++] = listings[i];
-            }
-        }
-
-        return activeListings;
-    }
-
     function getLength() public view returns (uint) {
         return listings.length;
     }
