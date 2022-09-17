@@ -40,7 +40,6 @@ contract SingleItemFactory is Ownable {
     }
 
     function createListing(address _tokenWanted, uint256 _amountWanted, address arbitrator, string memory imageURL, string memory name, string memory desc) public returns (SingleItemListing) {
-        
         SingleItemListing listing = new SingleItemListing(
             msg.sender, 
             _tokenWanted, 
@@ -60,19 +59,22 @@ contract SingleItemFactory is Ownable {
 
     //reviews
     
-    function writeReview(address user, uint256 review, SingleItemListing listing) public returns (uint256) {
+    function writeReview(uint256 review, SingleItemListing listing) public returns (uint256) {
         require(review == 1 || review == 2 || review == 3 || review == 4 || review == 5, "Review is not a compatible number");
+        require(listing.getHasThisBeenReviewed() == false, "This listing has already been reviewed");
         require(listing.getHasEnded() == true && msg.sender == listing.getBuyer());
         //reading the current data
-        uint256 currentAvgReview = userRatingMapping[user].userAverage;        
-        uint256 currentNumOfReviews = userRatingMapping[user].numOfReviews;
+        address seller = listing.getSeller();
+        uint256 currentAvgReview = userRatingMapping[seller].userAverage;        
+        uint256 currentNumOfReviews = userRatingMapping[seller].numOfReviews;
         //calculating the new average
         uint256 newAvg = (currentAvgReview * currentNumOfReviews) + review;
         uint256 newNumOfReviews = currentNumOfReviews + 1;
 
         //writing the data to storage
-        userRatingMapping[user].userAverage = newAvg;
-        userRatingMapping[user].numOfReviews = newNumOfReviews;
+        listing.reviewSeller(); //avoids double reviewing
+        userRatingMapping[seller].userAverage = newAvg;
+        userRatingMapping[seller].numOfReviews = newNumOfReviews;
         return review;
     }
 

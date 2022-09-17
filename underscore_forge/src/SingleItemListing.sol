@@ -67,12 +67,12 @@ contract SingleItemListing {
         uint256 arbitratorFeeExact = mulDiv(amountWanted, arbitratorFee, 10000);
         uint256 feeSum = protocolFeeExact + arbitratorFeeExact;
         uint256 amountWantedMinusFeeSum = amountWanted - feeSum;
+        buyer = msg.sender;
         IERC20(tokenWanted).transferFrom(msg.sender, address(this), amountWantedMinusFeeSum);
         IERC20(tokenWanted).transferFrom(msg.sender, getAdmin(), protocolFeeExact);
-        IERC20(tokenWanted).transferFrom(msg.sender, getAdmin(), arbitratorFeeExact);
+        IERC20(tokenWanted).transferFrom(msg.sender, arbitrator, arbitratorFeeExact);
         //storage info
         purchased = true;
-        buyer = msg.sender;
         emit ListingPurchased(buyer, seller, tokenWanted, amountWanted);
     }
 
@@ -162,9 +162,17 @@ contract SingleItemListing {
     function getHasEnded() public view returns (bool) {
         return hasEnded;
     }
+
+    function getHasThisBeenReviewed() public view returns (bool) {
+        return hasThisBeenReviewed;
+    }
     
     function getBuyer() public view returns (address) {
         return buyer;
+    }
+
+    function getSeller() public view returns (address) {
+        return seller;
     }
 
     struct localVars {
