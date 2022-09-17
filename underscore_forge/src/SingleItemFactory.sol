@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.11;
 
-import {Ownable} from "./openzeppelin/Ownable.sol";
 import {SingleItemListing} from "./SingleItemListing.sol";
 
-contract SingleItemFactory is Ownable {
+contract SingleItemFactory {
     uint256 public protocolFee = 750; // in bps
     uint256 public arbitratorFee = 100; // in bps
     address public admin;
@@ -32,11 +31,13 @@ contract SingleItemFactory is Ownable {
 
     event ListingCreated(address listingAddress, address tokenWanted, uint256 amountWanted);
 
-    function setProtocolFee(uint256 _newProtocolFee) public onlyOwner {
+    function setProtocolFee(uint256 _newProtocolFee) public  {
+        require(msg.sender == admin);
         protocolFee = _newProtocolFee;
     }
     
-    function setArbitratorFee(uint256 _newArbitratorFee) public onlyOwner {
+    function setArbitratorFee(uint256 _newArbitratorFee) public {
+        require(msg.sender == admin);
         protocolFee = _newArbitratorFee;
     }
 

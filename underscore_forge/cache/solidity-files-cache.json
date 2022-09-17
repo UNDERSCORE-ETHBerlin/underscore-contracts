@@ -292,8 +292,8 @@
       }
     },
     "/Users/joshuabaker/underscore/underscore_forge/src/SingleItemFactory.sol": {
-      "lastModificationDate": 1663427586836,
-      "contentHash": "43181eff935b93a6a44ff23a55dea3a3",
+      "lastModificationDate": 1663427705857,
+      "contentHash": "f63b018898f04c6eab9ee5bf117970a6",
       "sourceName": "src/SingleItemFactory.sol",
       "solcConfig": {
         "settings": {
@@ -324,10 +324,8 @@
         "src/SingleItemFactory.sol",
         "src/SingleItemListing.sol",
         "src/openzeppelin/Address.sol",
-        "src/openzeppelin/Context.sol",
         "src/openzeppelin/IERC20.sol",
         "src/openzeppelin/IOwnable.sol",
-        "src/openzeppelin/Ownable.sol",
         "src/openzeppelin/SafeERC20.sol"
       ],
       "versionRequirement": "^0.8.11",
@@ -370,10 +368,8 @@
         "src/SingleItemFactory.sol",
         "src/SingleItemListing.sol",
         "src/openzeppelin/Address.sol",
-        "src/openzeppelin/Context.sol",
         "src/openzeppelin/IERC20.sol",
         "src/openzeppelin/IOwnable.sol",
-        "src/openzeppelin/Ownable.sol",
         "src/openzeppelin/SafeERC20.sol"
       ],
       "versionRequirement": "^0.8.11",
