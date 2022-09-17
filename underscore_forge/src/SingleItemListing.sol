@@ -81,6 +81,7 @@ contract SingleItemListing {
         IERC20(tokenWanted).transferFrom(msg.sender, arbitrator, arbitratorFeeExact);
         //storage info
         purchased = true;
+        setUserPurchaseStorageInternal();
         emit ListingPurchased(buyer, seller, tokenWanted, amountWanted);
     }
 
@@ -155,7 +156,7 @@ contract SingleItemListing {
     }
 
     //function userPurchaseStorage(address user, SingleItemListing individualListing)
-    function setUserPurchaseStorage() internal {
+    function setUserPurchaseStorageInternal() internal {
         SingleItemFactory(factory).userPurchaseStorage(buyer, address(this));
     }
 

@@ -338,8 +338,8 @@
       }
     },
     "/Users/joshuabaker/underscore/underscore_forge/src/SingleItemListing.sol": {
-      "lastModificationDate": 1663426010956,
-      "contentHash": "bbc7642f020b5bbd7a6df0cef80ad77c",
+      "lastModificationDate": 1663427382084,
+      "contentHash": "a7d82f285b18479c9a220d05d7d28af6",
       "sourceName": "src/SingleItemListing.sol",
       "solcConfig": {
         "settings": {
