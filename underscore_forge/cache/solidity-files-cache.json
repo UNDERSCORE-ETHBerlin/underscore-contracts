@@ -291,50 +291,9 @@
         }
       }
     },
-    "/Users/joshuabaker/underscore/underscore_forge/src/SCORE.sol": {
-      "lastModificationDate": 1663411894037,
-      "contentHash": "9b5ec221047d2c0e9f236f5e900c3b0f",
-      "sourceName": "src/SCORE.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs"
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ]
-            }
-          },
-          "evmVersion": "london"
-        }
-      },
-      "imports": [
-        "src/openzeppelin/FixedPointMathLib.sol",
-        "src/openzeppelin/SafeTransferLib.sol",
-        "src/openzeppelin/Solmate_ERC20.sol"
-      ],
-      "versionRequirement": ">=0.8.0",
-      "artifacts": {
-        "scoreVault": {
-          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "SCORE.sol/scoreVault.json"
-        }
-      }
-    },
     "/Users/joshuabaker/underscore/underscore_forge/src/SingleItemFactory.sol": {
-      "lastModificationDate": 1663405896205,
-      "contentHash": "265caaca9602a438430dcf1a338f5dff",
+      "lastModificationDate": 1663417994644,
+      "contentHash": "f3b62dc12c0567c3220c68c1d11fd0c7",
       "sourceName": "src/SingleItemFactory.sol",
       "solcConfig": {
         "settings": {
@@ -378,8 +337,8 @@
       }
     },
     "/Users/joshuabaker/underscore/underscore_forge/src/SingleItemListing.sol": {
-      "lastModificationDate": 1663408990231,
-      "contentHash": "5b8acd937d07fa5bb0dc64e6830294a5",
+      "lastModificationDate": 1663417645439,
+      "contentHash": "df6ce1d6b6cb8b65660c217ea7adf0f2",
       "sourceName": "src/SingleItemListing.sol",
       "solcConfig": {
         "settings": {
