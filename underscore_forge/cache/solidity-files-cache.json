@@ -292,8 +292,8 @@
       }
     },
     "/Users/joshuabaker/underscore/underscore_forge/src/SingleItemFactory.sol": {
-      "lastModificationDate": 1663417994644,
-      "contentHash": "f3b62dc12c0567c3220c68c1d11fd0c7",
+      "lastModificationDate": 1663419919316,
+      "contentHash": "2d213fc6475e18de0b1e5e9b774fe266",
       "sourceName": "src/SingleItemFactory.sol",
       "solcConfig": {
         "settings": {
@@ -337,8 +337,8 @@
       }
     },
     "/Users/joshuabaker/underscore/underscore_forge/src/SingleItemListing.sol": {
-      "lastModificationDate": 1663417645439,
-      "contentHash": "df6ce1d6b6cb8b65660c217ea7adf0f2",
+      "lastModificationDate": 1663419985463,
+      "contentHash": "a9d9176ca5bd5351a7845179cb8dab0e",
       "sourceName": "src/SingleItemListing.sol",
       "solcConfig": {
         "settings": {
