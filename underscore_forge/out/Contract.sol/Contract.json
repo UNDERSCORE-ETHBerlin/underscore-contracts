@@ -1,0 +1,56 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220e9c0147fb2c14889ca7e43cbd6f91ed958bc8896465a7fd6b35836904625acc064736f6c634300080d0033",
+    "sourceMap": "65:20:13:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080604052600080fdfea2646970667358221220e9c0147fb2c14889ca7e43cbd6f91ed958bc8896465a7fd6b35836904625acc064736f6c634300080d0033",
+    "sourceMap": "65:20:13:-:0;;;;;",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/joshuabaker/underscore/underscore_forge/src/openzeppelin/Contract.sol",
+    "id": 25485,
+    "exportedSymbols": {
+      "Contract": [
+        25484
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:47:13",
+    "nodes": [
+      {
+        "id": 25483,
+        "nodeType": "PragmaDirective",
+        "src": "39:24:13",
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".13"
+        ]
+      },
+      {
+        "id": 25484,
+        "nodeType": "ContractDefinition",
+        "src": "65:20:13",
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Contract",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          25484
+        ],
+        "name": "Contract",
+        "nameLocation": "74:8:13",
+        "scope": 25485,
+        "usedErrors": []
+      }
+    ],
+    "license": "UNLICENSED"
+  }
+}

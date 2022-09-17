@@ -1,0 +1,128 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/joshuabaker/underscore/underscore_forge/src/openzeppelin/IOwnable.sol",
+    "id": 27462,
+    "exportedSymbols": {
+      "IOwnable": [
+        27461
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "38:102:24",
+    "nodes": [
+      {
+        "id": 27455,
+        "nodeType": "PragmaDirective",
+        "src": "38:24:24",
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".11"
+        ]
+      },
+      {
+        "id": 27461,
+        "nodeType": "ContractDefinition",
+        "src": "64:76:24",
+        "nodes": [
+          {
+            "id": 27460,
+            "nodeType": "FunctionDefinition",
+            "src": "89:49:24",
+            "functionSelector": "8da5cb5b",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "owner",
+            "nameLocation": "98:5:24",
+            "parameters": {
+              "id": 27456,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "103:2:24"
+            },
+            "returnParameters": {
+              "id": 27459,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 27458,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 27460,
+                  "src": "129:7:24",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 27457,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "129:7:24",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "128:9:24"
+            },
+            "scope": 27461,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IOwnable",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          27461
+        ],
+        "name": "IOwnable",
+        "nameLocation": "74:8:24",
+        "scope": 27462,
+        "usedErrors": []
+      }
+    ],
+    "license": "Unlicense"
+  }
+}
