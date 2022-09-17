@@ -8,8 +8,12 @@ contract SingleItemFactory is Ownable {
     uint256 public protocolFee = 750; // in bps
     uint256 public arbitratorFee = 100; // in bps
     address public admin;
+    uint256 public distributionSpeed; //per block
+
     SingleItemListing[] public listings;
     mapping(address => SingleItemListing[]) public userListings;
+    mapping(address => uint) volumeAccrued;
+
     struct userRatings {
         uint256 userAverage;
         uint256 numOfReviews;
@@ -70,6 +74,21 @@ contract SingleItemFactory is Ownable {
         userRatingMapping[user].userAverage = newAvg;
         userRatingMapping[user].numOfReviews = newNumOfReviews;
         return review;
+    }
+
+    //post hackathon distributions can actually be distributed, this is to keep proper accounting until then
+    function accrueDistributions(address user) public {
+        SingleItemListing[] usersListings = getSingleUserListings(msg.sender);
+        uint256 volumeUnaccrued;
+        for (uint256 i; i < usersListings.length; i++) {
+            SingleItemListing individualListing = SingleItemListing(usersListings[i]);
+            if (individualListing.hasEnded() && !individualListing.hasThisSCOREBeenClaimed()) {
+                individualListing.setHasThisScoreBeenClaimed();
+                volumeUnaccrued += individualListing.amountWanted();
+            }
+        }
+        volumeAccrued[user] += volumeUnaccrued;
+        return volumeAccrued[user];
     }
 
     //view functions

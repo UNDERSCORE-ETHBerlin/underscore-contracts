@@ -20,9 +20,11 @@ contract SingleItemListing {
     bool public buyerConfirm = false;
     bool public arbitratorConfirm = false;
     bool public hasThisBeenReviewed = false;
+    bool public hasThisSCOREBeenClaimed = false;
     string imageURL;
     string itemName;
     string itemDesc;
+    
 
     event ListingPurchased(address buyer, address seller, address tokenWanted, uint256 amountWanted);
     event SellerConfirmation(address seller, bool sellerConfirm);
@@ -116,6 +118,7 @@ contract SingleItemListing {
             hasEnded = true;
             return hasEnded;
         }
+
         return hasEnded;
     }
 
@@ -132,6 +135,15 @@ contract SingleItemListing {
         require(purchased == true);
         SafeERC20.safeTransfer(IERC20(tokenWanted), buyer, IERC20(tokenWanted).balanceOf(address(this)));
         hasEnded = true;
+    }
+
+    function getHasThisSCOREBeenClaimed() public view returns (bool) {
+        return hasThisSCOREBeenClaimed;
+    }
+
+    function setHasThisScoreBeenClaimed() public {
+        require(msg.sender == factory);
+        hasThisSCOREBeenClaimed = true;
     }
 
     function cancel() public {
