@@ -49,7 +49,8 @@ contract SingleItemFactory is Ownable {
             arbitratorFee,
             imageURL,
             name,
-            desc
+            desc,
+            block.number
         );
         listings.push(listing);
         userListings[msg.sender].push(listing);

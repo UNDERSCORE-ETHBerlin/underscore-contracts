@@ -12,6 +12,7 @@ contract SingleItemListing {
     address public immutable arbitrator;
     uint256 public immutable protocolFee; // in bps
     uint256 public immutable arbitratorFee; // in bps
+    uint256 public immutable blockCreated;
     bool public hasEnded = false;
     bool public purchased = false;
     address public buyer;
@@ -41,7 +42,8 @@ contract SingleItemListing {
         uint256 _arbitratorFee,
         string memory _imageURL, 
         string memory _itemName, 
-        string memory _itemDesc
+        string memory _itemDesc,
+        uint _blockCreated
     ) {
         factory = msg.sender;
         seller = _seller;
@@ -54,6 +56,7 @@ contract SingleItemListing {
         imageURL = _imageURL;
         itemName = _itemName;
         itemDesc = _itemDesc;
+        blockCreated = _blockCreated;
     }
 
     function getAdmin() public view returns (address) {
@@ -183,6 +186,7 @@ contract SingleItemListing {
         string imageURL_; 
         string itemName_; 
         string itemDesc_;
+        uint blockCreated_;
     }
 
     function getFrontEndData() public view returns (localVars memory) {
@@ -195,6 +199,7 @@ contract SingleItemListing {
         vars.itemName_ = itemName;
         vars.imageURL_ = imageURL;
         vars.itemDesc_ = itemDesc;
+        vars.blockCreated_ = blockCreated;
         return vars;
     }
 
