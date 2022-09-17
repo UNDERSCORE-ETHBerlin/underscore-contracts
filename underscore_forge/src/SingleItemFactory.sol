@@ -138,8 +138,4 @@ contract SingleItemFactory is Ownable {
         }
         return activeListings;
     }
-
-    function getLength() public view returns (uint) {
-        return listings.length;
-    }
 }
