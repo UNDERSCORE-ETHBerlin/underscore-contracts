@@ -197,6 +197,9 @@ contract SingleItemListing {
         string itemName_; 
         string itemDesc_;
         uint blockCreated_;
+        bool sellerConfirm_;
+        bool buyerConfirm_;
+        bool arbitratorConfirm_;
     }
 
     function getFrontEndData() public view returns (localVars memory) {
@@ -210,6 +213,9 @@ contract SingleItemListing {
         vars.imageURL_ = imageURL;
         vars.itemDesc_ = itemDesc;
         vars.blockCreated_ = blockCreated;
+        vars.sellerConfirm_ = sellerConfirm;
+        vars.buyerConfirm_ = buyerConfirm;
+        vars.arbitratorConfirm_ = arbitratorConfirm;
         return vars;
     }
 
