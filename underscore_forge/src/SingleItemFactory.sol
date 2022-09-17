@@ -12,6 +12,7 @@ contract SingleItemFactory is Ownable {
 
     SingleItemListing[] public listings;
     mapping(address => SingleItemListing[]) public userListings;
+    mapping(address => SingleItemListing[]) public userPurchases;
     mapping(address => uint) adjustedVolumeAccrued;
 
     struct userRatings {
@@ -97,9 +98,33 @@ contract SingleItemFactory is Ownable {
         return adjustedVolumeAccrued[user];
     }
 
+    function userPurchaseStorage(address user, address listingAdd) public returns (SingleItemListing[] memory) {
+        SingleItemListing individualListing = SingleItemListing(listingAdd);
+        require (msg.sender == address(individualListing));
+        require(individualListing.getFactory() == address(this));
+        require(checkListingOriginatedHere(individualListing, individualListing.getSeller()));
+        userPurchases[user].push(individualListing);
+        return userPurchases[user];
+    }
     //view functions
     function getSingleUserListings(address user) public view returns(SingleItemListing[] memory) {
         return userListings[user];
+    }
+
+    function getSingleUserPurchases(address user) public view returns(SingleItemListing[] memory) {
+        return userPurchases[user];
+    }
+
+    function checkListingOriginatedHere(SingleItemListing listing, address seller) public view returns(bool) {
+        SingleItemListing[] memory sellersListings = getSingleUserListings(seller);
+        bool isFromHere = false;
+        for (uint256 i; i < sellersListings.length; i++) {
+            SingleItemListing individualListing = SingleItemListing(sellersListings[i]);
+            if (address(individualListing) == address(listing) && isFromHere == false) {
+                isFromHere = true;
+            }
+        }
+        return isFromHere;
     }
 
     function getActiveListings() public view returns (SingleItemListing[] memory) {

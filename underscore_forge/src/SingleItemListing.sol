@@ -3,6 +3,7 @@ pragma solidity ^0.8.11;
 
 import {IOwnable} from "./openzeppelin/IOwnable.sol";
 import "./openzeppelin/SafeERC20.sol";
+import "./SingleItemFactory.sol";
 
 contract SingleItemListing {
     address public immutable factory;
@@ -61,6 +62,10 @@ contract SingleItemListing {
 
     function getAdmin() public view returns (address) {
         return IOwnable(factory).owner();
+    }
+
+    function getFactory() public view returns (address) {
+        return factory;
     }
 
     function buy() public {
@@ -147,6 +152,11 @@ contract SingleItemListing {
     function setHasThisScoreBeenClaimed() public {
         require(msg.sender == factory);
         hasThisSCOREBeenClaimed = true;
+    }
+
+    //function userPurchaseStorage(address user, SingleItemListing individualListing)
+    function setUserPurchaseStorage() internal {
+        SingleItemFactory(factory).userPurchaseStorage(buyer, address(this));
     }
 
     function cancel() public {
