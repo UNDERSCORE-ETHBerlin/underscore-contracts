@@ -4,8 +4,8 @@ pragma solidity ^0.8.11;
 import {SingleItemListing} from "./SingleItemListing.sol";
 
 contract SingleItemFactory {
-    uint256 public protocolFee = 750; // in bps
-    uint256 public arbitratorFee = 100; // in bps
+    uint256 public protocolFee = 500; // in bps
+    uint256 public arbitratorFee = 250; // in bps
     address public admin;
     uint256 public distributionSpeed; //per block
 
