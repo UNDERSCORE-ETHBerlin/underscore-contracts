@@ -59,12 +59,13 @@ contract SingleItemListing {
         blockCreated = _blockCreated;
     }
 
-    function getAdmin() public view returns (address) {
-        return SingleItemFactory(factory).owner();
-    }
-
-    function getFactory() public view returns (address) {
-        return factory;
+    function cancel() public {
+        require(msg.sender == seller);
+        require(hasEnded == false);
+        require(purchased == false);
+        //logic after checking requires to avoid reentrancy
+        hasEnded = true;
+        emit ListingCanceled(seller, tokenWanted, IERC20(tokenWanted).balanceOf(address(this)));
     }
 
     function buy() public {
@@ -80,7 +81,7 @@ contract SingleItemListing {
         IERC20(tokenWanted).transferFrom(msg.sender, arbitrator, arbitratorFeeExact);
         //storage info
         purchased = true;
-        setUserPurchaseStorageInternal();
+        SingleItemFactory(factory).userPurchaseStorage(buyer, address(this));
         emit ListingPurchased(buyer, seller, tokenWanted, amountWanted);
     }
 
@@ -100,9 +101,10 @@ contract SingleItemListing {
         }
     }
 
-    function reviewSeller() public {
+    function reviewSeller() public returns (bool) {
         require(msg.sender == factory);
         hasThisBeenReviewed = true;
+        return hasThisBeenReviewed;
     }
 
     function sellerClaim() public returns (bool) {
@@ -145,6 +147,15 @@ contract SingleItemListing {
         hasEnded = true;
     }
 
+
+    function getAdmin() public view returns (address) {
+        return SingleItemFactory(factory).owner();
+    }
+
+    function getFactory() public view returns (address) {
+        return factory;
+    }
+    
     function getHasThisSCOREBeenClaimed() public view returns (bool) {
         return hasThisSCOREBeenClaimed;
     }
@@ -152,20 +163,6 @@ contract SingleItemListing {
     function setHasThisScoreBeenClaimed() public {
         require(msg.sender == factory);
         hasThisSCOREBeenClaimed = true;
-    }
-
-    //function userPurchaseStorage(address user, SingleItemListing individualListing)
-    function setUserPurchaseStorageInternal() internal {
-        SingleItemFactory(factory).userPurchaseStorage(buyer, address(this));
-    }
-
-    function cancel() public {
-        require(msg.sender == seller);
-        require(hasEnded == false);
-        require(purchased == false);
-        //logic after checking requires to avoid reentrancy
-        hasEnded = true;
-        emit ListingCanceled(seller, tokenWanted, IERC20(tokenWanted).balanceOf(address(this)));
     }
 
     function hasTokens() public view returns (bool) {

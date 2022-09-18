@@ -120,6 +120,7 @@ contract SingleItemFactory {
         return userPurchases[user];
     }
 
+    //disgusting, yes, but temporary
     function checkListingOriginatedHere(SingleItemListing listing, address seller) public view returns(bool) {
         SingleItemListing[] memory sellersListings = getSingleUserListings(seller);
         bool isFromHere = false;
